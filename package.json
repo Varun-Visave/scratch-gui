@@ -4,8 +4,7 @@
   "description": "Graphical User Interface for creating and running Scratch 3.0 projects",
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
-  "homepage": "https://Varun-Visave.github.io/scratch-gui"
-,
+  "homepage": "https://Varun-Visave.github.io/scratch-gui",
   "repository": {
     "type": "git",
     "url": "https://github.com/scratchfoundation/scratch-gui.git"
@@ -19,7 +18,8 @@
   "scripts": {
     "build": "npm run clean && webpack",
     "clean": "rimraf ./build ./dist",
-    "deploy": "npm run build && touch build/.nojekyll && gh-pages -d build -m \"[skip ci] Build for $(git log -1 --format=%h)\"",
+    "predeploy":"npm run build",
+    "deploy": "gh-pages -d build",
     "prepublish": "node scripts/prepublish.mjs",
     "prune": "./prune-gh-pages.sh",
     "i18n:push": "tx-push-src scratch-editor interface translations/en.json",
