@@ -1,14 +1,15 @@
 import classNames from 'classnames';
 import omit from 'lodash.omit';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useRef } from 'react';
 import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
 import {connect} from 'react-redux';
 import MediaQuery from 'react-responsive';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import tabStyles from 'react-tabs/style/react-tabs.css';
 import VM from 'scratch-vm';
-import Renderer from 'scratch-render';
+import Renderer, { style } from 'scratch-render';
+import{ useState } from 'react';
 
 import Blocks from '../../containers/blocks.jsx';
 import CostumeTab from '../../containers/costume-tab.jsx';
@@ -40,6 +41,10 @@ import addExtensionIcon from './icon--extensions.svg';
 import codeIcon from './icon--code.svg';
 import costumesIcon from './icon--costumes.svg';
 import soundsIcon from './icon--sounds.svg';
+import stageCollapseIcon from './stage--close.svg';
+import stageUncollapseIcon from './stage--open.svg';
+import { set } from 'core-js/core/dict';
+import { prevStep } from '../../reducers/cards.js';
 
 const messages = defineMessages({
     addExtension: {
@@ -142,7 +147,16 @@ const GUIComponent = props => {
     if (isRendererSupported === null) {
         isRendererSupported = Renderer.isSupported();
     }
+    
+    const [isFocused,setIsFocused] = useState(false);
+    const stageRef = useRef (null);
 
+    const handleFocus = () =>{
+        setIsFocused(true);
+    }
+    const toggleFocus = () =>{
+        setIsFocused(prevState=>!prevState)
+    }
     return (<MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {
         const stageSize = resolveStageSize(stageSizeMode, isFullSize);
 
@@ -303,6 +317,12 @@ const GUIComponent = props => {
                                             id="gui.gui.soundsTab"
                                         />
                                     </Tab>
+                                    <button
+                                        onClick={toggleFocus}
+                                        className={styles.toggleButton}
+                                    >
+                                        <img src={isFocused ? stageCollapseIcon : stageUncollapseIcon} draggable={false} alt="" />
+                                        {isFocused ? 'Close Stage' : 'Open Stage'}</button>
                                 </TabList>
                                 <TabPanel className={tabClassNames.tabPanel}>
                                     <Box className={styles.blocksWrapper}>
@@ -347,8 +367,11 @@ const GUIComponent = props => {
                                 <Backpack host={backpackHost} />
                             ) : null}
                         </Box>
-
-                        <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize])}>
+                        <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize],`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)}
+                                ref={stageRef}
+                                tabIndex="0"
+                                onFocus={handleFocus}
+                        >
                             <StageWrapper
                                 isFullScreen={isFullScreen}
                                 isRendererSupported={isRendererSupported}

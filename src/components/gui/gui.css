@@ -51,7 +51,9 @@
 
     display: flex;
     flex-direction: column;
-}
+    position: relative;
+    transition: flex-basis 0.3s ease-in-out, width 0.3s ease-in-out;
+}   
 
 .tab-list {
     height: $stage-menu-height;
@@ -193,7 +195,15 @@
     position: relative;
 }
 
-.stage-and-target-wrapper {
+.stage-and-target-wrapper{
+    position: fixed;
+    right:0;
+    transform: translateX(99%);
+    transition: transform 0.3s ease;
+    box-shadow: -10px 0 8px rgba(0, 0, 0, 0.1);
+}
+.stage-and-target-wrapper.focused {
+    box-shadow: none;
     /*
         Makes rows for children:
           1) stage menu
@@ -210,7 +220,39 @@
 
     /* this will only ever be as wide as the stage */
     flex-basis: 0;
+    transform: translateX(0);
+    position: relative;
+    right: 0;
+    transition: transform 0.3s ease;
+    z-index: 1; 
 }
+
+.toggle-button{
+    white-space: nowrap;
+    text-align: center;
+    cursor: pointer;
+    border-radius: calc(0.5rem / 2);
+    border-color: rgba(128, 128, 128, 0.356);
+    color: rgba(128, 128, 128, 0.848);
+    border-width: 0.1px;
+    padding: 1% 6%;
+    margin: 1%;
+    display: flex; 
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    flex-direction: row;
+    align-items: center;
+    background-color: #d9e3f2;
+}
+.toggle-button >  img{
+    margin-right: 5px;
+}
+.toggle-button:hover{
+    background-color: transparent;
+}
+
+/* .editor-wrapper{
+    flex-basis: 100%;
+} */
 
 .target-wrapper {
     display: flex;
@@ -225,7 +267,7 @@
         @todo: Not working in Safari
     */
     /* TODO this also breaks the thermometer menu */
-    /* overflow: hidden; */
+    /* overflow: hidden;    */
 }
 
 .extension-button-container {
