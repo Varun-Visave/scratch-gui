@@ -2,6 +2,9 @@
 @import "../../css/colors.css";
 @import "../../css/z-index.css";
 
+body{
+    overflow-x: hidden;
+}
 .page-wrapper {
     height: 100%;
 }
@@ -32,6 +35,14 @@
     */
     overflow-y: hidden;
 }
+.split-layout{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+
 
 .editor-wrapper {
     /*
@@ -54,6 +65,10 @@
     position: relative;
     transition: flex-basis 0.3s ease-in-out, width 0.3s ease-in-out;
 }   
+.editor-wrapper.background-test{
+    height: 100vh;
+}
+
 
 .tab-list {
     height: $stage-menu-height;
@@ -194,16 +209,48 @@
     flex-grow: 1;
     position: relative;
 }
-
-.stage-and-target-wrapper{
-    position: fixed;
-    right:0;
-    transform: translateX(99%);
-    transition: transform 0.3s ease;
-    box-shadow: -10px 0 8px rgba(0, 0, 0, 0.1);
+.blocks-wrapper.in-split-layout{
+    height: 84vh;
 }
+
+.scroll-button{
+    display: none;
+}
+.scroll-button.display{
+    display:flex;
+    height: 0;
+    align-items: center;
+    justify-content: center;
+    z-index: 42;
+}
+
+.scroll-button > button{
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 50%;
+    border:none;
+    background-color: $looks-secondary;
+}
+.scroll-button > button img{
+    user-select: none;
+    transform: rotate(90deg);
+}
+.scroll-button.clicked > button img{
+    transform: rotate(-90deg);
+}
+
+.scroll-button >button:hover{
+    background-color: $looks-secondary-dark;
+}
+.stage-and-target-wrapper{
+    position: absolute;
+    right:0;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
 .stage-and-target-wrapper.focused {
-    box-shadow: none;
     /*
         Makes rows for children:
           1) stage menu
@@ -213,7 +260,7 @@
         goes to full vertical height of the window
     */
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     /* pad entire wrapper to the left and right; allow children to fill width */
     padding-left: $space;
     padding-right: $space;
@@ -226,28 +273,37 @@
     transition: transform 0.3s ease;
     z-index: 1; 
 }
+.stage-and-target-wrapper > div:nth-child(1){
+    display: flex;
+    justify-self: center;
+    align-items: center;
+    width:0;
+}
+.stage-and-target-wrapper > div:nth-child(2){
+    display: flex;
+    flex: 1;
+    height: 100%;
+    flex-direction: column;
+}
 
 .toggle-button{
-    white-space: nowrap;
-    text-align: center;
+    transform: translateX(-70%);
+    display: flex;
+    align-items: center;
     cursor: pointer;
-    border-radius: calc(0.5rem / 2);
+    border-radius: 15px 0% 0% 15px;
     border-color: rgba(128, 128, 128, 0.356);
     color: rgba(128, 128, 128, 0.848);
     border-width: 0.1px;
-    padding: 1% 6%;
-    margin: 1%;
-    display: flex; 
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    flex-direction: row;
-    align-items: center;
-    background-color: #d9e3f2;
+    background-color: $looks-secondary;
+    z-index: 0;
 }
-.toggle-button >  img{
-    margin-right: 5px;
+.toggle-button.hide-layout{
+    display: none;
 }
+
 .toggle-button:hover{
-    background-color: transparent;
+    background-color: $looks-secondary-dark;
 }
 
 /* .editor-wrapper{
@@ -268,6 +324,10 @@
     */
     /* TODO this also breaks the thermometer menu */
     /* overflow: hidden;    */
+}
+
+.target-wrapper.in-split-layout{
+    min-height: auto;
 }
 
 .extension-button-container {

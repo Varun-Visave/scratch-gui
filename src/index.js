@@ -6,11 +6,13 @@ import {ScratchPaintReducer} from 'scratch-paint';
 import {setFullScreen, setPlayer} from './reducers/mode';
 import {remixProject} from './reducers/project-state';
 import {setAppElement} from 'react-modal';
+import layoutReducer, {layoutInitialState,setFlowColumn,setFlowRow} from './reducers/layout-reducer.js';
+
 
 const guiReducers = {
     locales: LocalesReducer,
     scratchGui: GuiReducer,
-    scratchPaint: ScratchPaintReducer
+    scratchPaint: ScratchPaintReducer,
 };
 
 export {

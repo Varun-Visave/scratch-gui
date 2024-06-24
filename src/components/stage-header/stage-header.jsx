@@ -1,7 +1,7 @@
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import PropTypes from 'prop-types';
-import React from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect } from 'react';
+import {Provider, connect} from 'react-redux';
 import VM from 'scratch-vm';
 
 import Box from '../box/box.jsx';
@@ -10,14 +10,17 @@ import ToggleButtons from '../toggle-buttons/toggle-buttons.jsx';
 import Controls from '../../containers/controls.jsx';
 import {getStageDimensions} from '../../lib/screen-utils';
 import {STAGE_SIZE_MODES} from '../../lib/layout-constants';
+import { toggleColFlow } from '../../reducers/stage-size.js';
 
 import fullScreenIcon from './icon--fullscreen.svg';
 import largeStageIcon from './icon--large-stage.svg';
 import smallStageIcon from './icon--small-stage.svg';
 import unFullScreenIcon from './icon--unfullscreen.svg';
+import splitStageIcon from './icon--split-stage.svg'
 
 import scratchLogo from '../menu-bar/scratch-logo.svg';
 import styles from './stage-header.css';
+
 
 const messages = defineMessages({
     largeStageSizeMessage: {
@@ -47,8 +50,10 @@ const messages = defineMessages({
     }
 });
 
+
 const StageHeaderComponent = function (props) {
     const {
+
         isFullScreen,
         isPlayerOnly,
         onKeyPress,
@@ -56,13 +61,16 @@ const StageHeaderComponent = function (props) {
         onSetStageSmall,
         onSetStageFull,
         onSetStageUnFull,
+        colFlow,
         showBranding,
         stageSizeMode,
         vm
     } = props;
-
+    
     let header = null;
-
+    useEffect(() => {
+        console.log('colFlow has changed:', colFlow);
+    }, [colFlow]);
     if (isFullScreen) {
         const stageDimensions = getStageDimensions(null, true);
         const stageButton = showBranding ? (
@@ -117,7 +125,7 @@ const StageHeaderComponent = function (props) {
                             {
                                 handleClick: onSetStageSmall,
                                 icon: smallStageIcon,
-                                iconClassName: styles.stageButtonIcon,
+                                iconClassName: styles.stageButtonIcon && !colFlow,
                                 isSelected: stageSizeMode === STAGE_SIZE_MODES.small,
                                 title: props.intl.formatMessage(messages.smallStageSizeMessage)
                             },
@@ -125,8 +133,15 @@ const StageHeaderComponent = function (props) {
                                 handleClick: onSetStageLarge,
                                 icon: largeStageIcon,
                                 iconClassName: styles.stageButtonIcon,
-                                isSelected: stageSizeMode === STAGE_SIZE_MODES.large,
+                                isSelected: stageSizeMode === STAGE_SIZE_MODES.large && !colFlow,
                                 title: props.intl.formatMessage(messages.largeStageSizeMessage)
+                            },
+                            {
+                                handleClick:props.toggleColFlow,
+                                isSelected:colFlow,
+                                icon:splitStageIcon,
+                                iconClassName: styles.stageButtonIcon,
+                                title:"Split Layout"
                             }
                         ]}
                     />
@@ -163,11 +178,18 @@ const StageHeaderComponent = function (props) {
 
 const mapStateToProps = state => ({
     // This is the button's mode, as opposed to the actual current state
-    stageSizeMode: state.scratchGui.stageSize.stageSize
+    stageSizeMode: state.scratchGui.stageSize.stageSize,
+    colFlow:state.scratchGui.stageSize.colFlow,
 });
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        toggleColFlow: () => dispatch(toggleColFlow())
+    };
+};
 StageHeaderComponent.propTypes = {
     intl: intlShape,
+
     isFullScreen: PropTypes.bool.isRequired,
     isPlayerOnly: PropTypes.bool.isRequired,
     onKeyPress: PropTypes.func.isRequired,
@@ -185,5 +207,5 @@ StageHeaderComponent.defaultProps = {
 };
 
 export default injectIntl(connect(
-    mapStateToProps
+    mapStateToProps,mapDispatchToProps
 )(StageHeaderComponent));

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import omit from 'lodash.omit';
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
 import {connect} from 'react-redux';
 import MediaQuery from 'react-responsive';
@@ -43,8 +43,7 @@ import costumesIcon from './icon--costumes.svg';
 import soundsIcon from './icon--sounds.svg';
 import stageCollapseIcon from './stage--close.svg';
 import stageUncollapseIcon from './stage--open.svg';
-import { set } from 'core-js/core/dict';
-import { prevStep } from '../../reducers/cards.js';
+import { flex } from 'to-style/src/prefixProperties.js';
 
 const messages = defineMessages({
     addExtension: {
@@ -87,6 +86,8 @@ const GUIComponent = props => {
         connectionModalVisible,
         costumeLibraryVisible,
         costumesTabVisible,
+        colFlow,
+        display,
         enableCommunity,
         intl,
         isCreating,
@@ -147,17 +148,35 @@ const GUIComponent = props => {
     if (isRendererSupported === null) {
         isRendererSupported = Renderer.isSupported();
     }
-    
     const [isFocused,setIsFocused] = useState(false);
+    const [click, setClick] = useState(false);
     const stageRef = useRef (null);
-
+    
     const handleFocus = () =>{
         setIsFocused(true);
     }
     const toggleFocus = () =>{
-        setIsFocused(prevState=>!prevState)
+        setIsFocused(prevState=>!prevState);
     }
-    return (<MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {
+    const scrollToStage = () => {
+        setClick(prevState=>!prevState)
+        if(!click){
+            const stageid = document.getElementById('StageID')
+            stageid?.scrollIntoView({behavior: 'smooth'})
+        }
+        if(click){
+            const top = document.getElementById('top');
+            top?.scrollIntoView( {behavior: 'smooth'})
+        }
+      };
+      useEffect(()=>{
+        if(colFlow===undefined || !colFlow){
+            setClick(false)
+        }
+      })
+      
+    return (
+    <MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {
         const stageSize = resolveStageSize(stageSizeMode, isFullSize);
 
         return isPlayerOnly ? (
@@ -259,8 +278,8 @@ const GUIComponent = props => {
                     onToggleLoginOpen={onToggleLoginOpen}
                 />
                 <Box className={styles.bodyWrapper}>
-                    <Box className={styles.flexWrapper}>
-                        <Box className={styles.editorWrapper}>
+                    <Box className={classNames(styles.flexWrapper, {[styles.splitLayout]:colFlow},)}>
+                        <Box className={classNames(styles.editorWrapper,{[styles.backgroundTest]:colFlow})}>
                             <Tabs
                                 forceRenderTabPanel
                                 className={tabClassNames.tabs}
@@ -274,6 +293,7 @@ const GUIComponent = props => {
                                         <img
                                             draggable={false}
                                             src={codeIcon}
+                                            id='top'
                                         />
                                         <FormattedMessage
                                             defaultMessage="Code"
@@ -317,15 +337,9 @@ const GUIComponent = props => {
                                             id="gui.gui.soundsTab"
                                         />
                                     </Tab>
-                                    <button
-                                        onClick={toggleFocus}
-                                        className={styles.toggleButton}
-                                    >
-                                        <img src={isFocused ? stageCollapseIcon : stageUncollapseIcon} draggable={false} alt="" />
-                                        {isFocused ? 'Close Stage' : 'Open Stage'}</button>
                                 </TabList>
                                 <TabPanel className={tabClassNames.tabPanel}>
-                                    <Box className={styles.blocksWrapper}>
+                                    <Box className={classNames(styles.blocksWrapper,{[styles.inSplitLayout]:colFlow})}>
                                         <Blocks
                                             key={`${blocksId}/${theme}`}
                                             canUseCloud={canUseCloud}
@@ -363,28 +377,42 @@ const GUIComponent = props => {
                                     {soundsTabVisible ? <SoundTab vm={vm} /> : null}
                                 </TabPanel>
                             </Tabs>
+                            <div className={classNames(styles.scrollButton,{[styles.display]:colFlow},{[styles.clicked]:click})}>
+                            <button onClick={scrollToStage}><img src={stageCollapseIcon} alt="" /></button>
+                            </div>
                             {backpackVisible ? (
                                 <Backpack host={backpackHost} />
                             ) : null}
                         </Box>
+                        {/* <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize],`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)} */}
                         <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize],`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)}
                                 ref={stageRef}
                                 tabIndex="0"
                                 onFocus={handleFocus}
                         >
-                            <StageWrapper
-                                isFullScreen={isFullScreen}
-                                isRendererSupported={isRendererSupported}
-                                isRtl={isRtl}
-                                stageSize={stageSize}
-                                vm={vm}
-                            />
-                            <Box className={styles.targetWrapper}>
-                                <TargetPane
+                            <div>
+                                    <button onClick={toggleFocus}
+                                        className={classNames(styles.toggleButton,{[styles.hideLayout]:colFlow})}>
+                                        <img src={isFocused ? stageCollapseIcon : stageUncollapseIcon} draggable={false} alt="" />
+                                    </button>
+                            </div> 
+                            <div className={styles.stageTarget} id='StageID'>
+                                <div style={{display:'flex',justifyContent:'center',flex: '1',width: '100%'}}>
+                                <StageWrapper
+                                    isFullScreen={isFullScreen}
+                                    isRendererSupported={isRendererSupported}
+                                    isRtl={isRtl}
                                     stageSize={stageSize}
                                     vm={vm}
                                 />
-                            </Box>
+                                </div>
+                                <Box className={classNames(styles.targetWrapper,{[styles.inSplitLayout]:colFlow})}>
+                                    <TargetPane
+                                        stageSize={stageSize}
+                                        vm={vm}
+                                    />
+                                </Box>
+                            </div>
                         </Box>
                     </Box>
                 </Box>
@@ -393,7 +421,6 @@ const GUIComponent = props => {
         );
     }}</MediaQuery>);
 };
-
 GUIComponent.propTypes = {
     accountNavOpen: PropTypes.bool,
     activeTabIndex: PropTypes.number,
@@ -489,9 +516,10 @@ const mapStateToProps = state => ({
     // This is the button's mode, as opposed to the actual current state
     blocksId: state.scratchGui.timeTravel.year.toString(),
     stageSizeMode: state.scratchGui.stageSize.stageSize,
-    theme: state.scratchGui.theme.theme
+    theme: state.scratchGui.theme.theme,
+    colFlow:state.scratchGui.stageSize.colFlow,
+    display:state.scratchGui.stageSize.display,
 });
-
 export default injectIntl(connect(
     mapStateToProps
 )(GUIComponent));
