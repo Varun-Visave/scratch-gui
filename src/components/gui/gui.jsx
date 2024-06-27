@@ -43,7 +43,6 @@ import costumesIcon from './icon--costumes.svg';
 import soundsIcon from './icon--sounds.svg';
 import stageCollapseIcon from './stage--close.svg';
 import stageUncollapseIcon from './stage--open.svg';
-import { flex } from 'to-style/src/prefixProperties.js';
 
 const messages = defineMessages({
     addExtension: {
@@ -148,15 +147,20 @@ const GUIComponent = props => {
     if (isRendererSupported === null) {
         isRendererSupported = Renderer.isSupported();
     }
-    const [isFocused,setIsFocused] = useState(false);
+    const [isFocused,setIsFocused] = useState(true);
     const [click, setClick] = useState(false);
     const stageRef = useRef (null);
     
     const handleFocus = () =>{
         setIsFocused(true);
     }
+    function dispatchResizeEvent() {
+        window.dispatchEvent(new Event('resize'));
+        console.log('window resized')
+    }
     const toggleFocus = () =>{
         setIsFocused(prevState=>!prevState);
+        dispatchResizeEvent();
     }
     const scrollToStage = () => {
         setClick(prevState=>!prevState)
@@ -173,12 +177,13 @@ const GUIComponent = props => {
         if(colFlow===undefined || !colFlow){
             setClick(false)
         }
+        dispatchResizeEvent();
+        console.log('the stage size state : ' + stageSizeMode)
       })
       
     return (
     <MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {
         const stageSize = resolveStageSize(stageSizeMode, isFullSize);
-
         return isPlayerOnly ? (
             <StageWrapper
                 isFullScreen={isFullScreen}
@@ -348,7 +353,8 @@ const GUIComponent = props => {
                                             options={{
                                                 media: `${basePath}static/${themeMap[theme].blocksMediaFolder}/`
                                             }}
-                                            stageSize={stageSize}
+                                            // stageSize={stageSize}
+                                            stageSize={isFocused ? 'small' : stageSize}
                                             theme={theme}
                                             vm={vm}
                                         />
@@ -378,14 +384,14 @@ const GUIComponent = props => {
                                 </TabPanel>
                             </Tabs>
                             <div className={classNames(styles.scrollButton,{[styles.display]:colFlow},{[styles.clicked]:click})}>
-                            <button onClick={scrollToStage}><img src={stageCollapseIcon} alt="" /></button>
+                            <button onClick={scrollToStage} id='scrollButton'><img src={stageCollapseIcon} alt="" /></button>
                             </div>
-                            {backpackVisible ? (
+                            {/* {backpackVisible ? (
                                 <Backpack host={backpackHost} />
-                            ) : null}
+                            ) : null} */}
                         </Box>
-                        {/* <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize],`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)} */}
-                        <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize],`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)}
+                        {/* <Box className={classNames(styles.  TargetWrapper, styles[stageSize],`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)} */}
+                        <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize], {[styles.inSplitLayout]:colFlow},`${styles.stageAndTargetWrapper} ${isFocused ? styles.focused : ''}`)}
                                 ref={stageRef}
                                 tabIndex="0"
                                 onFocus={handleFocus}
@@ -396,8 +402,8 @@ const GUIComponent = props => {
                                         <img src={isFocused ? stageCollapseIcon : stageUncollapseIcon} draggable={false} alt="" />
                                     </button>
                             </div> 
-                            <div className={styles.stageTarget} id='StageID'>
-                                <div style={{display:'flex',justifyContent:'center',flex: '1',width: '100%'}}>
+                            <div className={classNames(styles.stageTarget)} id='StageID'>
+                                <div style={{display:'flex',flex: '1',width: '100%', justifyContent:'center'}}>
                                 <StageWrapper
                                     isFullScreen={isFullScreen}
                                     isRendererSupported={isRendererSupported}
@@ -408,7 +414,7 @@ const GUIComponent = props => {
                                 </div>
                                 <Box className={classNames(styles.targetWrapper,{[styles.inSplitLayout]:colFlow})}>
                                     <TargetPane
-                                        stageSize={stageSize}
+                                        stageSize={colFlow ? 'split' : stageSize}
                                         vm={vm}
                                     />
                                 </Box>

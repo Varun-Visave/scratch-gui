@@ -1,7 +1,7 @@
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import {Provider, connect} from 'react-redux';
+import {connect} from 'react-redux';
 import VM from 'scratch-vm';
 
 import Box from '../box/box.jsx';
@@ -61,6 +61,7 @@ const StageHeaderComponent = function (props) {
         onSetStageSmall,
         onSetStageFull,
         onSetStageUnFull,
+        onSetStageSplit,
         colFlow,
         showBranding,
         stageSizeMode,
@@ -137,7 +138,8 @@ const StageHeaderComponent = function (props) {
                                 title: props.intl.formatMessage(messages.largeStageSizeMessage)
                             },
                             {
-                                handleClick:props.toggleColFlow,
+                                handleClick:onSetStageSplit,
+                                // handleClick:props.toggleColFlow,
                                 isSelected:colFlow,
                                 icon:splitStageIcon,
                                 iconClassName: styles.stageButtonIcon,
@@ -197,6 +199,7 @@ StageHeaderComponent.propTypes = {
     onSetStageLarge: PropTypes.func.isRequired,
     onSetStageSmall: PropTypes.func.isRequired,
     onSetStageUnFull: PropTypes.func.isRequired,
+    onSetStageSplit:PropTypes.func.isRequired,
     showBranding: PropTypes.bool.isRequired,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
     vm: PropTypes.instanceOf(VM).isRequired

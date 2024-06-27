@@ -4,10 +4,12 @@ import React from 'react';
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 
 import GreenFlag from '../green-flag/green-flag.jsx';
+import ScreenshotComponent from '../screenshot-button/screenshot-button.jsx';
 import StopAll from '../stop-all/stop-all.jsx';
 import TurboMode from '../turbo-mode/turbo-mode.jsx';
 
 import styles from './controls.css';
+import ScreenRecordComponent from '../screenrecord-button/screenrecord-button.jsx';
 
 const messages = defineMessages({
     goTitle: {
@@ -47,6 +49,9 @@ const Controls = function (props) {
                 title={intl.formatMessage(messages.stopTitle)}
                 onClick={onStopAllClick}
             />
+            <ScreenshotComponent/>
+
+            {/* <ScreenRecordComponent/> */}
             {turbo ? (
                 <TurboMode />
             ) : null}

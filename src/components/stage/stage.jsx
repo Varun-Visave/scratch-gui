@@ -115,6 +115,7 @@ const StageComponent = props => {
                         height={0}
                         ref={dragRef}
                         width={0}
+                        id='canvas'
                     />
                 </Box>
                 {isStarted ? null : (

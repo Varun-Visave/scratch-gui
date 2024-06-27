@@ -2,7 +2,7 @@
 @import "../../css/colors.css";
 @import "../../css/z-index.css";
 
-body{
+html,body{
     overflow-x: hidden;
 }
 .page-wrapper {
@@ -41,8 +41,6 @@ body{
     height: 100%;
     overflow-y: scroll;
 }
-
-
 
 .editor-wrapper {
     /*
@@ -210,7 +208,7 @@ body{
     position: relative;
 }
 .blocks-wrapper.in-split-layout{
-    height: 84vh;
+    height: 86vh;
 }
 
 .scroll-button{
@@ -230,7 +228,9 @@ body{
     padding: 2px;
     border-radius: 50%;
     border:none;
+    transform: translateY(60%);
     background-color: $looks-secondary;
+
 }
 .scroll-button > button img{
     user-select: none;
@@ -248,6 +248,8 @@ body{
     right:0;
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: row;
 }
 
 .stage-and-target-wrapper.focused {
@@ -259,8 +261,8 @@ body{
         Only reason we need this, is so .targetWrapper, which holds the selectors,
         goes to full vertical height of the window
     */
-    display: flex;
-    flex-direction: row;
+    /* display: flex;
+    flex-direction: row; */
     /* pad entire wrapper to the left and right; allow children to fill width */
     padding-left: $space;
     padding-right: $space;
@@ -284,6 +286,10 @@ body{
     flex: 1;
     height: 100%;
     flex-direction: column;
+}
+.stage-and-target-wrapper.in-split-layout > div:nth-child(2) {
+    transform: translateY(18%);
+    flex-direction: row;
 }
 
 .toggle-button{
@@ -328,6 +334,8 @@ body{
 
 .target-wrapper.in-split-layout{
     min-height: auto;
+    width: 100%;
+    flex: 2 1 0%;
 }
 
 .extension-button-container {
