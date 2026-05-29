@@ -43,6 +43,7 @@ import costumesIcon from './icon--costumes.svg';
 import soundsIcon from './icon--sounds.svg';
 import stageCollapseIcon from './stage--close.svg';
 import stageUncollapseIcon from './stage--open.svg';
+import { standardStageWidth } from '../../lib/layout-constants.js';
 
 const messages = defineMessages({
     addExtension: {
@@ -354,7 +355,7 @@ const GUIComponent = props => {
                                                 media: `${basePath}static/${themeMap[theme].blocksMediaFolder}/`
                                             }}
                                             // stageSize={stageSize}
-                                            stageSize={isFocused ? 'small' : stageSize}
+                                            stageSize={colFlow === 'column' ||isFocused ? 'small' : stageSize}
                                             theme={theme}
                                             vm={vm}
                                         />
@@ -414,7 +415,7 @@ const GUIComponent = props => {
                                 </div>
                                 <Box className={classNames(styles.targetWrapper,{[styles.inSplitLayout]:colFlow})}>
                                     <TargetPane
-                                        stageSize={colFlow ? 'split' : stageSize}
+                                        stageSize={stageSize}
                                         vm={vm}
                                     />
                                 </Box>

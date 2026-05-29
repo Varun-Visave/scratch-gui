@@ -1,37 +1,48 @@
 import React from "react";
-import html2canvas from "html2canvas";
 import screenShotButton from "./screen-shot-icon.svg";
 import classNames from "classnames";
 import styles from "./screenshot-button.css";
+import Canvas2Image from 'canvas2image-2';
 
 // Override the getContext method to set preserveDrawingBuffer to true
-HTMLCanvasElement.prototype.getContext = function(origFn) {
-    return function(type, attribs) {
-        attribs = attribs || {};
-        attribs.preserveDrawingBuffer = true;
-        return origFn.call(this, type, attribs);
-    };
-}(HTMLCanvasElement.prototype.getContext);
+// const origGetContext = HTMLCanvasElement.prototype.getContext;
+// HTMLCanvasElement.prototype.getContext = function(type, attribs) {
+//   attribs = attribs || {};
+//   attribs.preserveDrawingBuffer = true;
+//   return origGetContext.call(this, type, attribs);
+// };
 
 const ScreenshotComponent = () => {
   const handleTakeScreenshot = () => {
-    const elementId = 'canvas';
-    const element = document.getElementById(elementId);
-    if (element) {
-      html2canvas(element, { useCORS: true, allowTaint: true }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = 'screenshot.png';
-        link.href = imgData;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
-    } else {
-      console.error('Element not found');
+    const elementId = "canvas";
+    const canvas = document.getElementById(elementId);
+    const ctx = canvas.getContext('2d');
+
+
+    if (!canvas) {
+      console.error("Canvas element not found");
+      return;
     }
+
+    const gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
+    if (!gl) {
+      console.error(
+        "Unable to initialize WebGL. Your browser may not support it."
+      );
+      return;
+    }
+
+    // Perform any WebGL operations here if needed
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Create and download the image using Canvas2Image
+    Canvas2Image.saveAsPNG(canvas, canvas.width, canvas.height, 'screenshot.png');
+
+    // Reset WebGL context to preserveDrawingBuffer: false
+    gl.getExtension('WEBGL_lose_context').loseContext();
   };
-  
+
   return (
     <div>
       <img
@@ -40,13 +51,9 @@ const ScreenshotComponent = () => {
         className={classNames(styles.screenShotButton)}
         draggable={false}
         onClick={handleTakeScreenshot}
-        title="Take Screenshot  "
+        title="Take Screenshot"
       />
-      {/* <canvas
-        width="600"
-        height="450"
-        style={{ display: "none" }}
-      ></canvas> */}
+      <canvas id="canvas" width="600" height="450" style={{ display: 'none' }}></canvas>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { createStore } from "redux";
-import layoutReducer from "./reducers/layout-reducer";
+import reducer from "./reducers/stage-size";
 
-const store = createStore(layoutReducer);
+const store = createStore(reducer);
 
 export default store;

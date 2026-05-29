@@ -26,10 +26,12 @@ const layoutReducer = (state = initialState, action) => {
 
 const setFlowColumn = () => ({ type: SET_FLOW_COLUMN });
 const setFlowRow = () => ({ type: SET_FLOW_ROW });
+const getFlow = (state) => state.flow;
 
 export {
     layoutReducer as default,
     initialState as layoutInitialState,
     setFlowColumn,
-    setFlowRow
+    setFlowRow,
+    getFlow
 };

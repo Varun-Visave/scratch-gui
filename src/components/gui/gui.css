@@ -294,6 +294,8 @@ html,body{
 
 .toggle-button{
     transform: translateX(-70%);
+    position: fixed;
+    bottom: 45%;
     display: flex;
     align-items: center;
     cursor: pointer;

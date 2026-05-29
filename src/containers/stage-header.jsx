@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import bindAll from 'lodash.bindall';
 import VM from 'scratch-vm';
-import {STAGE_SIZE_MODES} from '../lib/layout-constants';
+import {STAGE_SIZE_MODES, standardStageWidth} from '../lib/layout-constants';
 import {setStageSize, toggleColFlow} from '../reducers/stage-size';
 import {setFullScreen} from '../reducers/mode';
 

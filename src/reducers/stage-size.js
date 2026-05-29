@@ -20,7 +20,7 @@ const reducer = function (state, action) {
     case TOGGLE_COL_FLOW:
         return {
             ...state,
-            colFlow: !state.colFlow
+            colFlow: !state.colFlow 
         };
     case TOGGLE_DISPLAY_CSS:
         return {
@@ -45,11 +45,13 @@ const toggleColFlow= () =>({
 const toggleDisplayCss= () =>({
         type: TOGGLE_DISPLAY_CSS
 });
+const getColFlow = () => state.colFlow;
 
 export {
     reducer as default,
     initialState as stageSizeInitialState,
     setStageSize,
     toggleColFlow,
-    toggleDisplayCss
+    toggleDisplayCss,
+    getColFlow
 };
